@@ -68,6 +68,7 @@ function showContact() {
   cursor: pointer;
 }
 
+
 .contact-info {
   margin-top: 15px;
   font-size: 16px;

@@ -135,6 +135,7 @@ h1 {
   cursor: pointer;
 }
 
+
 .events {
   display: flex;
   justify-content: center;

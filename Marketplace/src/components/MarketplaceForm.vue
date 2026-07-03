@@ -94,6 +94,7 @@ function submitForm() {
   height: auto;
 }
 
+
 .submit-button {
   margin-top: 25px;
   width: 120px;

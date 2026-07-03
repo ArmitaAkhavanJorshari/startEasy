@@ -21,6 +21,7 @@ async function signIn() {
       password: loginPassword.value
     })
 
+    
     console.log(response.data)
     emit('login-success')
   } catch (error) {
