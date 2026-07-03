@@ -81,7 +81,10 @@ onMounted(() => {
     <section v-if="showCreateForm" class="create-area">
       <EventForm @formSubmit="addEvent" />
 
-      <SignupBox v-if="showSignup" @login-success="savePendingEvent" @register-success="savePendingEvent"
+      <SignupBox
+  v-if="showSignup"
+  @login-success="savePendingEvent"
+  @register-success="savePendingEvent"
 />
     </section>
   </main>
