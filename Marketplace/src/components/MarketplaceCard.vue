@@ -1,14 +1,14 @@
 <script setup>
+import { ref } from 'vue'
+
 const props = defineProps({
   item: Object
 })
 
+const showContactInfo = ref(false)
+
 function showContact() {
-  if (props.item.contact) {
-    alert(`Kontakt: ${props.item.contact}`)
-  } else {
-    alert('Keine Kontaktinformation vorhanden.')
-  }
+  showContactInfo.value = !showContactInfo.value
 }
 </script>
 
@@ -23,6 +23,10 @@ function showContact() {
     <button class="contact-button" type="button" @click="showContact">
       Kontakt
     </button>
+
+    <p v-if="showContactInfo" class="contact-info">
+      Kontakt: {{ props.item.contact }}
+    </p>
   </div>
 </template>
 
@@ -45,11 +49,13 @@ function showContact() {
   font-size: 18px;
   margin: 12px 0 5px 0;
   font-weight: normal;
+  color: black;
 }
 
 .marketplace-card p {
   margin: 5px 0;
   font-size: 16px;
+  color: black;
 }
 
 .contact-button {
@@ -60,5 +66,12 @@ function showContact() {
   border-radius: 30px;
   padding: 10px 35px;
   cursor: pointer;
+}
+
+.contact-info {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
 }
 </style>

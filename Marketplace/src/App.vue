@@ -23,7 +23,7 @@ const defaultItems = [
   {
     id: 1,
     title: "Zwischenmiete",
-    description: "1 Zimmer 24m2",
+    description: "1 Zimmer ",
     location: "Laerholzstr.21",
     contact: "test@email.de",
     image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
@@ -31,7 +31,7 @@ const defaultItems = [
   {
     id: 2,
     title: "Fahrrad",
-    description: "Elektro zustand sehr gut preis 40€",
+    description: "preis: 40€",
     location: "Bochum",
     contact: "017612345678",
     image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e"
@@ -145,7 +145,7 @@ onMounted(() => {
         <button v-if="token" class="logout-button" @click="logout">
           Logout
         </button>
-      `</div>
+      </div>
 
       <button class="create-button" @click="openCreateForm">
         + Neue Anzeige erstellen
@@ -211,9 +211,17 @@ h1 {
   color: white;
   border: none;
   border-radius: 30px;
-  padding: 18px 40px;
+  width: 330px;
+  height: 58px;
   font-size: 20px;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .items {
@@ -244,11 +252,17 @@ h1 {
 }
 
 .logout-button {
-  background-color: #483826;
+  background-color: #2d007d;
   color: white;
   border: none;
   border-radius: 20px;
   padding: 8px 18px;
   cursor: pointer;
+}
+
+.header h1,
+.location-box p,
+.login-status p {
+  color: black;
 }
 </style>
