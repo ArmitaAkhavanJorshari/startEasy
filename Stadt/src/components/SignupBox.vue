@@ -1,5 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
+
+const emit = defineEmits(['authSuccess'])
+
+const API_URL = 'http://127.0.0.1:8000/api'
 
 const loginEmail = ref('')
 const loginPassword = ref('')
@@ -8,6 +13,66 @@ const name = ref('')
 const vorname = ref('')
 const email = ref('')
 const password = ref('')
+
+function getErrorMessage(error, fallbackMessage) {
+  if (error.response?.data?.errors) {
+    return Object.values(error.response.data.errors).flat().join('\n')
+  }
+
+  if (error.response?.data?.message) {
+    return error.response.data.message
+  }
+
+  return fallbackMessage
+}
+
+function saveToken(response) {
+  const token = response.data.token
+
+  if (!token) {
+    alert('Kein Token erhalten.')
+    return
+  }
+
+  localStorage.setItem('token', token)
+  emit('authSuccess', token)
+}
+
+async function signIn() {
+  try {
+    const response = await axios.post(`${API_URL}/login`, {
+      email: loginEmail.value,
+      password: loginPassword.value
+    })
+
+    saveToken(response)
+  } catch (error) {
+    console.error(error.response?.data || error)
+    alert(getErrorMessage(error, 'Sign-in fehlgeschlagen.'))
+  }
+}
+
+async function signUp() {
+  try {
+    if (!name.value || !vorname.value || !email.value || !password.value) {
+      alert('Bitte alle Felder ausfüllen.')
+      return
+    }
+
+    const fullName = `${vorname.value} ${name.value}`.trim()
+
+    const response = await axios.post(`${API_URL}/register`, {
+      name: fullName,
+      email: email.value,
+      password: password.value
+    })
+
+    saveToken(response)
+  } catch (error) {
+    console.error(error.response?.data || error)
+    alert(getErrorMessage(error, 'Sign-up fehlgeschlagen.'))
+  }
+}
 </script>
 
 <template>
@@ -19,7 +84,7 @@ const password = ref('')
       <input v-model="loginEmail" type="email" placeholder="email:">
       <input v-model="loginPassword" type="password" placeholder="password:">
 
-      <button class="signin-button">
+      <button class="signin-button" type="button" @click="signIn">
         Sign-in
       </button>
     </div>
@@ -34,7 +99,7 @@ const password = ref('')
       <input v-model="email" type="email" placeholder="email:">
       <input v-model="password" type="password" placeholder="password:">
 
-      <button class="signup-button">
+      <button class="signup-button" type="button" @click="signUp">
         Sign-up
       </button>
     </div>
