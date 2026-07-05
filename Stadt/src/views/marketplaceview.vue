@@ -1,39 +1,113 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
 import MarketplaceCard from '../components/MarketplaceCard.vue'
 import MarketplaceForm from '../components/MarketplaceForm.vue'
 import SignupBox from '../components/SignupBox.vue'
 
+const API_URL = 'http://127.0.0.1:8000/api'
+
 const showCreateForm = ref(false)
 const showSignup = ref(false)
 
-const items = ref([
-  {
-    id: 1,
-    title: "Zwischenmiete",
-    description: "1 Zimmer 24m2",
-    location: "Laerholzstr.21",
-    contact: "test@email.de",
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
-  },
-  {
-    id: 2,
-    title: "Fahrrad",
-    description: "Elektro zustand sehr gut preis 40€",
-    location: "Bochum",
-    contact: "017612345678",
-    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e"
-  }
-])
+const token = ref(localStorage.getItem('token'))
+const pendingAdvertisement = ref(null)
+
+const items = ref([])
+
+function logout() {
+  localStorage.removeItem('token')
+  token.value = null
+  showSignup.value = false
+}
 
 function openCreateForm() {
   showCreateForm.value = true
   showSignup.value = false
 }
 
-function openSignup() {
-  showSignup.value = true
+async function loadAdvertisements() {
+  try {
+    const response = await axios.get(`${API_URL}/advertisements`)
+
+    const backendItems = response.data.map(ad => ({
+      id: `db-${ad.id}`,
+      title: ad.title,
+      description: ad.description,
+      location: ad.location,
+      contact: ad.contact,
+      image: ad.image_url
+    }))
+
+    items.value = backendItems
+  } catch (error) {
+    console.error('Fehler beim Laden der Anzeigen:', error)
+  }
 }
+
+async function storeAdvertisement(formData) {
+  try {
+    await axios.post(
+      `${API_URL}/advertisements`,
+      {
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        contact: formData.contact,
+        image_url: formData.imageUrl
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      }
+    )
+
+    pendingAdvertisement.value = null
+    showSignup.value = false
+    showCreateForm.value = false
+
+    await loadAdvertisements()
+  } catch (error) {
+    console.error('Fehler beim Speichern der Anzeige:', error.response?.data || error)
+
+    if (error.response?.status === 401 || error.response?.status === 419) {
+      localStorage.removeItem('token')
+      token.value = null
+      pendingAdvertisement.value = formData
+      showSignup.value = true
+      return
+    }
+
+    alert('Anzeige konnte nicht gespeichert werden.')
+  }
+}
+
+async function handleFormSubmit(formData) {
+  if (!token.value) {
+    pendingAdvertisement.value = formData
+    showSignup.value = true
+    return
+  }
+
+  await storeAdvertisement(formData)
+}
+
+async function handleAuthSuccess(newToken) {
+  token.value = newToken
+  localStorage.setItem('token', newToken)
+
+  if (pendingAdvertisement.value) {
+    await storeAdvertisement(pendingAdvertisement.value)
+  } else {
+    showSignup.value = false
+  }
+}
+
+onMounted(() => {
+  loadAdvertisements()
+})
 </script>
 
 <template>
@@ -45,7 +119,16 @@ function openSignup() {
         <p>Bochum</p>
       </div>
 
-      <button class="create-button" @click="openCreateForm">
+      <div class="login-status">
+        <p v-if="token">Angemeldet</p>
+        <p v-else>Nicht angemeldet</p>
+
+        <button v-if="token" class="logout-button" type="button" @click="logout">
+          Logout
+        </button>
+      </div>
+
+      <button class="create-button" type="button" @click="openCreateForm">
         + Neue Anzeige erstellen
       </button>
     </header>
@@ -59,9 +142,12 @@ function openSignup() {
     </section>
 
     <section v-if="showCreateForm" class="create-area">
-      <MarketplaceForm @formSubmit="openSignup" />
+      <MarketplaceForm @formSubmit="handleFormSubmit" />
 
-      <SignupBox v-if="showSignup" />
+      <SignupBox
+        v-if="showSignup"
+        @authSuccess="handleAuthSuccess"
+      />
     </section>
   </main>
 </template>
@@ -90,16 +176,39 @@ h1 {
   padding: 10px 20px 10px 20px;
   font-size: 36px;
   text-align: center;
+  color: black;
 }
 
 .location-box {
   margin-right: auto;
-  margin-left: 500px;
+  margin-left: 120px;
   font-size: 24px;
+  color: black;
 }
 
 .location-box p {
   margin: 0 0 10px 0;
+}
+
+.login-status {
+  font-size: 16px;
+  margin-right: 30px;
+  text-align: center;
+  color: black;
+}
+
+.login-status p {
+  margin: 0 0 8px 0;
+  font-weight: bold;
+}
+
+.logout-button {
+  background-color: #483826;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  cursor: pointer;
 }
 
 .create-button {
@@ -107,9 +216,17 @@ h1 {
   color: white;
   border: none;
   border-radius: 30px;
-  padding: 18px 40px;
+  width: 330px;
+  height: 58px;
   font-size: 20px;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .items {
@@ -126,7 +243,6 @@ h1 {
   margin: 100px auto 0;
   background-color: #846C4B;
   backdrop-filter: blur(8px);
-  color: #846C4B;
   padding: 30px;
   border-radius: 20px;
   color: white;

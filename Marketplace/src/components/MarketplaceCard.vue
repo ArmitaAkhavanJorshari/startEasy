@@ -17,8 +17,8 @@ function showContact() {
     <img :src="props.item.image" alt="Artikel Bild">
 
     <h2>{{ props.item.title }}</h2>
-    <p>{{ props.item.description }}</p>
-    <p>{{ props.item.location }}</p>
+    <p class="card-description">{{ props.item.description }}</p>
+    <p class="card-location">{{ props.item.location }}</p>
 
     <button class="contact-button" type="button" @click="showContact">
       Kontakt
@@ -36,6 +36,10 @@ function showContact() {
   width: 300px;
   padding: 0 0 25px 0;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .marketplace-card img {
@@ -58,8 +62,21 @@ function showContact() {
   color: black;
 }
 
+.card-description {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  line-height: 1.5;
+}
+
+.card-location {
+  min-height: 24px;
+}
+
 .contact-button {
-  margin-top: 18px;
+  margin-top: auto;
   background-color: #003c9e;
   color: white;
   border: none;
@@ -67,7 +84,6 @@ function showContact() {
   padding: 10px 35px;
   cursor: pointer;
 }
-
 
 .contact-info {
   margin-top: 15px;
