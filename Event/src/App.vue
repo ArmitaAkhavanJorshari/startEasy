@@ -7,6 +7,7 @@ import SignupBox from './components/SignupBox.vue'
 
 const showCreateForm = ref(false)
 const showSignup = ref(false)
+const event2 = ref(null)
 
 const events = ref([])
 
@@ -20,18 +21,25 @@ function openCreateForm() {
   showSignup.value = false
 }
 
-function openSignup() {
-  showSignup.value = true
-}
-
 function closeSignup() {
   showSignup.value = false
 }
 
 async function addEvent(newEvent) {
-  const response = await axios.post('http://127.0.0.1:8000/api/events', newEvent)
+  event2.value = newEvent
+  showSignup.value = true
+}
+async function savePendingEvent() {
+  if (!event2.value) {
+    return
+  }
+
+  const response = await axios.post('http://127.0.0.1:8000/api/events', event2.value)
+
   events.value.push(response.data)
+  event2.value = null
   showSignup.value = false
+  showCreateForm.value = false
 }
 
 async function joinEvent(id) {
@@ -63,17 +71,21 @@ onMounted(() => {
 
     <section class="events">
       <EventCard
-  v-for="event in events"
-  :key="event.id"
-  :event="event"
-  @join="joinEvent"
-/>
+        v-for="event in events"
+        :key="event.id"
+        :event="event"
+        @join="joinEvent"
+      />
     </section>
 
     <section v-if="showCreateForm" class="create-area">
       <EventForm @formSubmit="addEvent" />
 
-<SignupBox v-if="showSignup" @login-success="closeSignup" />
+      <SignupBox
+  v-if="showSignup"
+  @login-success="savePendingEvent"
+  @register-success="savePendingEvent"
+/>
     </section>
   </main>
 </template>
@@ -122,6 +134,7 @@ h1 {
   font-size: 20px;
   cursor: pointer;
 }
+
 
 .events {
   display: flex;

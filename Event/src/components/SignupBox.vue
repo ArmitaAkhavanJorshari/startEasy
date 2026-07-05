@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
+const emit = defineEmits(['login-success', 'register-success'])
+
+const API_URL = 'http://127.0.0.1:8000/api'
 
 const loginEmail = ref('')
 const loginPassword = ref('')
@@ -10,35 +13,44 @@ const name = ref('')
 const vorname = ref('')
 const email = ref('')
 const password = ref('')
-async function register() {
-  if (!name.value || !vorname.value || !email.value || !password.value) {
-    alert('Bitte alle Felder ausfüllen.')
-    return
+
+async function signIn() {
+  try {
+    const response = await axios.post(`${API_URL}/login`, {
+      email: loginEmail.value,
+      password: loginPassword.value
+    })
+
+    
+    console.log(response.data)
+    emit('login-success')
+  } catch (error) {
+    console.error(error.response?.data || error)
+    alert('Sign In fehlgeschlagen.')
   }
-
-  const response = await axios.post('http://127.0.0.1:8000/api/register', {
-    name: name.value + ' ' + vorname.value,
-    email: email.value,
-    password: password.value
-  })
-
-  alert('Registrierung erfolgreich')
-  console.log(response.data)
 }
-async function login() {
-  if (!loginEmail.value || !loginPassword.value) {
-    alert('Bitte E-Mail und Passwort eingeben.')
-    return
+
+async function signUp() {
+  try {
+    if (!name.value || !vorname.value || !email.value || !password.value) {
+      alert('Bitte alle Felder ausfüllen.')
+      return
+    }
+
+    const fullName = `${vorname.value} ${name.value}`.trim()
+
+    const response = await axios.post(`${API_URL}/register`, {
+      name: fullName,
+      email: email.value,
+      password: password.value
+    })
+
+    console.log(response.data)
+    emit('register-success')
+  } catch (error) {
+    console.error(error.response?.data || error)
+    alert('Sign-up fehlgeschlagen.')
   }
-
-  const response = await axios.post('http://127.0.0.1:8000/api/login', {
-    email: loginEmail.value,
-    password: loginPassword.value
-  })
-
-  alert(response.data.message)
-  console.log(response.data)
-  
 }
 </script>
 
@@ -51,7 +63,7 @@ async function login() {
       <input v-model="loginEmail" type="email" placeholder="email:">
       <input v-model="loginPassword" type="password" placeholder="password:">
 
-      <button type="button" class="signin-button" @click="login">
+      <button class="signin-button" type="button" @click="signIn">
         Sign-in
       </button>
     </div>
@@ -66,7 +78,7 @@ async function login() {
       <input v-model="email" type="email" placeholder="email:">
       <input v-model="password" type="password" placeholder="password:">
 
-      <button type="button" class="signup-button" @click="register">
+      <button class="signup-button" type="button" @click="signUp">
         Sign-up
       </button>
     </div>

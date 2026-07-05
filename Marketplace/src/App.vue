@@ -214,6 +214,7 @@ h1 {
   margin-top: 110px;
 }
 
+
 .create-area {
   position: relative;
   width: 700px;

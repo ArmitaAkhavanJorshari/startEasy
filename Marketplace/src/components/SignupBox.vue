@@ -157,6 +157,8 @@ async function signUp() {
   gap: 15px;
 }
 
+
+
 .signin-part h2,
 .signup-part h2 {
   margin: 0 0 10px 0;

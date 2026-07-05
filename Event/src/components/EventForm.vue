@@ -22,6 +22,7 @@ function submitForm() {
 }
 </script>
 
+
 <template>
   <form class="event-form" @submit.prevent="submitForm">
     <label>Titel:</label>

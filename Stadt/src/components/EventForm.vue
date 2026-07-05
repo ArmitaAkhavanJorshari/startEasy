@@ -10,7 +10,15 @@ const location = ref('')
 const description = ref('')
 
 function submitForm() {
-  emit('formSubmit')
+  const newEvent = {
+    title: title.value,
+    date: date.value,
+    time: time.value,
+    location: location.value,
+    description: description.value
+  }
+
+  emit('formSubmit', newEvent)
 }
 </script>
 

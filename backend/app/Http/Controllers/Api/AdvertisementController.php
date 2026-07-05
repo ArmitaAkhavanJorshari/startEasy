@@ -15,6 +15,7 @@ class AdvertisementController extends Controller
         );
     }
 
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

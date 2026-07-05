@@ -18,6 +18,7 @@ function joinEvent() {
     <p>{{ props.event.location }}</p>
     <p>{{ props.event.participants }} Teilnehmer</p>
 
+    
     <button class="join-button" @click="joinEvent">
       Beitreten
     </button>

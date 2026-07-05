@@ -2,6 +2,12 @@
 const props = defineProps({
   event: Object
 })
+
+const emit = defineEmits(['join'])
+
+function joinEvent() {
+  emit('join', props.event.id)
+}
 </script>
 
 <template>
@@ -12,7 +18,7 @@ const props = defineProps({
     <p>{{ props.event.location }}</p>
     <p>{{ props.event.participants }} Teilnehmer</p>
 
-    <button class="join-button">
+    <button class="join-button" @click="joinEvent">
       Beitreten
     </button>
   </div>
