@@ -8,32 +8,55 @@ const description = ref('')
 const location = ref('')
 const contact = ref('')
 const imageUrl = ref('')
-const imageFile = ref('')
+
+function handleFileUpload(event) {
+  const file = event.target.files[0]
+
+  if (!file) {
+    return
+  }
+
+  const reader = new FileReader()
+
+  reader.onload = () => {
+    imageUrl.value = reader.result
+  }
+
+  reader.readAsDataURL(file)
+}
 
 function submitForm() {
-  emit('formSubmit')
+  emit('formSubmit', {
+    title: title.value,
+    description: description.value,
+    location: location.value,
+    contact: contact.value,
+    imageUrl: imageUrl.value
+  })
 }
 </script>
 
 <template>
   <form class="marketplace-form" @submit.prevent="submitForm">
-    <label>Artikel:</label>
+    <label>Artikel * :</label>
     <input v-model="title" type="text" required>
 
-    <label>Beschreibung:</label>
+    <label>Beschreibung * :</label>
     <input v-model="description" type="text" required>
 
-    <label>Standort:</label>
+    <label>Standort * :</label>
     <input v-model="location" type="text" required>
 
-    <label>Email oder Telefonnummer:</label>
+    <label>Email oder Telefonnummer * :</label>
     <input v-model="contact" type="text" required>
 
-    <label>Foto URL:</label>
-    <input v-model="imageUrl" type="text">
-
-    <label>Oder Bild auswählen:</label>
-    <input class="file-input" type="file">
+    <label>Bild auswählen * :</label>
+    <input
+      class="file-input"
+      type="file"
+      accept="image/*"
+      @change="handleFileUpload"
+    >
 
     <button class="submit-button" type="submit">
       erstellen
@@ -46,7 +69,6 @@ function submitForm() {
   width: 500px;
   display: flex;
   flex-direction: column;
-  
 }
 
 .marketplace-form label {

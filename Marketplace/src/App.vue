@@ -19,26 +19,9 @@ function logout() {
 }
 const pendingAdvertisement = ref(null)
 
-const defaultItems = [
-  {
-    id: 1,
-    title: "Zwischenmiete",
-    description: "1 Zimmer ",
-    location: "Laerholzstr.21",
-    contact: "test@email.de",
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
-  },
-  {
-    id: 2,
-    title: "Fahrrad",
-    description: "preis: 40€",
-    location: "Bochum",
-    contact: "017612345678",
-    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e"
-  }
-]
+const defaultItems = []
 
-const items = ref(defaultItems)
+const items = ref([])
 
 function openCreateForm() {
   showCreateForm.value = true
@@ -55,10 +38,10 @@ async function loadAdvertisements() {
       description: ad.description,
       location: ad.location,
       contact: ad.contact,
-      image: ad.image_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3'
+      image: ad.image_url
     }))
 
-    items.value = [...defaultItems, ...backendItems]
+    items.value = backendItems
   } catch (error) {
     console.error('Fehler beim Laden der Anzeigen:', error)
   }
