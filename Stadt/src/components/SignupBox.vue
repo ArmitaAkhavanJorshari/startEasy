@@ -26,8 +26,15 @@ function getErrorMessage(error, fallbackMessage) {
   return fallbackMessage
 }
 
+function getToken(response) {
+  return response.data.token ||
+         response.data.access_token ||
+         response.data.accessToken ||
+         response.data.plainTextToken
+}
+
 function saveToken(response) {
-  const token = response.data.token
+  const token = getToken(response)
 
   if (!token) {
     alert('Kein Token erhalten.')
@@ -64,7 +71,8 @@ async function signUp() {
     const response = await axios.post(`${API_URL}/register`, {
       name: fullName,
       email: email.value,
-      password: password.value
+      password: password.value,
+      password_confirmation: password.value
     })
 
     saveToken(response)
