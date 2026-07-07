@@ -14,6 +14,11 @@ const vorname = ref('')
 const email = ref('')
 const password = ref('')
 
+
+const showRegisterSuccess = ref(false)
+
+
+
 function getErrorMessage(error, fallbackMessage) {
   if (error.response?.data?.errors) {
     return Object.values(error.response.data.errors).flat().join('\n')
@@ -75,7 +80,12 @@ async function signUp() {
       password_confirmation: password.value
     })
 
-    saveToken(response)
+    showRegisterSuccess.value = true
+
+    setTimeout(() => {
+      showRegisterSuccess.value = false
+      saveToken(response)
+    }, 2000)
   } catch (error) {
     console.error(error.response?.data || error)
     alert(getErrorMessage(error, 'Sign-up fehlgeschlagen.'))
@@ -110,6 +120,12 @@ async function signUp() {
       <button class="signup-button" type="button" @click="signUp">
         Sign-up
       </button>
+    </div>
+
+    <div v-if="showRegisterSuccess" class="register-success">
+      <div class="checkmark">✓</div>
+      <h3>Registrierung erfolgreich!</h3>
+      <p>Willkommen bei StartEasy!</p>
     </div>
 
   </div>
@@ -172,5 +188,55 @@ async function signUp() {
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
+}
+
+
+
+.register-success {
+  position: absolute;
+  inset: 0;
+  background-color: #f5f5c9;
+  color: #483826;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid white;
+  animation: popIn 0.4s ease;
+  z-index: 10;
+}
+
+.checkmark {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #483826;
+  color: white;
+  font-size: 48px;
+  line-height: 70px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.register-success h3 {
+  margin: 5px 0;
+  font-size: 26px;
+}
+
+.register-success p {
+  margin: 0;
+  font-size: 18px;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

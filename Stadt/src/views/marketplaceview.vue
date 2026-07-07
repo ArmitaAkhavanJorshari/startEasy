@@ -16,7 +16,7 @@ const pendingAdvertisement = ref(null)
 
 const items = ref([])
 
-function logout() {
+function signout() {
   localStorage.removeItem('token')
   token.value = null
   showSignup.value = false
@@ -113,25 +113,25 @@ onMounted(() => {
 <template>
   <main class="page">
     <header class="header">
-      <h1>Marketplace</h1>
+    <div class="login-status">
+      <span v-if="token">Angemeldet</span>
+      <span v-else>Nicht angemeldet</span>
+    </div>
 
-      <div class="location-box">
-        <p>Bochum</p>
-      </div>
+    <h1>Marketplace</h1>
 
-      <div class="login-status">
-        <p v-if="token">Angemeldet</p>
-        <p v-else>Nicht angemeldet</p>
+    <div class="location-box">
+      <p>Bochum</p>
+    </div>
 
-        <button v-if="token" class="logout-button" type="button" @click="logout">
-          Logout
-        </button>
-      </div>
+    <button class="create-button" type="button" @click="openCreateForm">
+      + Neue Anzeige erstellen
+    </button>
 
-      <button class="create-button" type="button" @click="openCreateForm">
-        + Neue Anzeige erstellen
-      </button>
-    </header>
+    <button v-if="token" class="signout-button" @click="signout">
+      Sign out
+    </button>
+  </header>
 
     <section class="items">
       <MarketplaceCard
@@ -181,7 +181,7 @@ h1 {
 
 .location-box {
   margin-right: auto;
-  margin-left: 120px;
+  margin-left: 500px;
   font-size: 24px;
   color: black;
 }
@@ -190,25 +190,28 @@ h1 {
   margin: 0 0 10px 0;
 }
 
+
+
 .login-status {
-  font-size: 16px;
-  margin-right: 30px;
-  text-align: center;
-  color: black;
+  background-color: #f5f5c9;
+  color: #483826;
+  border: 2px solid #483826;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  margin-right: 20px;
+  align-self: center;
 }
 
-.login-status p {
-  margin: 0 0 8px 0;
-  font-weight: bold;
-}
-
-.logout-button {
-  background-color: #483826;
+.signout-button {
+  background-color: #846c4b;
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 8px 18px;
+  border-radius: 30px;
+  padding: 18px 30px;
+  font-size: 20px;
   cursor: pointer;
+  margin-left: 15px;
 }
 
 .create-button {

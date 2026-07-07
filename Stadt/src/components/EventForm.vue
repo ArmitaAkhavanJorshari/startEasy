@@ -36,8 +36,6 @@ function submitForm() {
     <label>Standort:</label>
     <input v-model="location" type="text" required>
 
-    <label>Beschreibung:</label>
-    <input v-model="description" type="text">
 
     <button class="submit-button" type="submit">
       erstellen

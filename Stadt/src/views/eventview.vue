@@ -15,6 +15,8 @@ const events = ref([])
 const pendingEvent = ref(null)
 const token = ref(localStorage.getItem('token'))
 
+const showJoinSuccess = ref(false)
+
 async function loadEvents() {
   try {
     const response = await axios.get(`${API_URL}/events`)
@@ -112,6 +114,11 @@ async function joinEvent(id) {
     if (index !== -1) {
       events.value[index] = response.data
     }
+    showJoinSuccess.value = true
+
+    setTimeout(() => {
+      showJoinSuccess.value = false
+    }, 2500)
   } catch (error) {
     console.error(error.response?.data || error)
     alert(getErrorText(error, 'Beitreten fehlgeschlagen.'))
@@ -136,6 +143,13 @@ onMounted(() => {
 </script>
 
 <template>
+  <div v-if="showJoinSuccess" class="success-overlay">
+    <div class="success-popup">
+      <div class="checkmark">✓</div>
+      <h3>Erfolgreich beigetreten!</h3>
+      <p>Du bist jetzt bei diesem Event angemeldet.</p>
+    </div>
+  </div>
   <main class="page">
     <header class="header">
     <div class="login-status">
@@ -265,5 +279,57 @@ h1 {
   font-size: 18px;
   margin-right: 20px;
   align-self: center;
+}
+
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.success-popup {
+  background-color: #f5f5c9;
+  color: #483826;
+  padding: 35px 50px;
+  border-radius: 25px;
+  text-align: center;
+  animation: popIn 0.4s ease;
+}
+
+.checkmark {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background-color: #483826;
+  color: white;
+  font-size: 48px;
+  line-height: 70px;
+}
+
+.success-popup h3 {
+  margin: 10px 0;
+  font-size: 28px;
+}
+
+.success-popup p {
+  font-size: 18px;
+  margin: 0;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>
